@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/three@0.140.2/build/three.min.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', init);
+        function init() {
+            const width = 960;
+            const height = 540;
+
+            // レンダラー
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#myCanvas')
+            });
+            renderer.setSize(width, height);
+
+            // シーン
+            const scene = new THREE.Scene();
+
+            // カメラ
+            const camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+            camera.position.set(0, 0, +1000);
+
+            // 球体
+            const geometry = new THREE.SphereGeometry(300, 30, 30);
+            const material = new THREE.MeshStandardMaterial({color: 0xFF0000});
+            // メッシュ
+            const mesh = new THREE.Mesh(geometry, material);
+            // シーンにメッシュを追加
+            scene.add(mesh);
+
+            // 平行光源
+            const directionalLight = new THREE.DirectionalLight(0xFF0000);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+
+            // 初期動作
+            tick();
+
+            function tick() {
+                mesh.rotation.y += 0.01;
+                renderer.render(scene, camera);
+
+                requestAnimationFrame(tick);
+            }
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>

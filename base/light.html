@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <title>Document</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            const width = 960;
+            const height = 540;
+
+            // レンダラー
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#myCanvas'),
+            });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(width, height);
+
+            // シーン
+            const scene = new THREE.Scene();
+
+            // カメラ
+            const camera = new THREE.PerspectiveCamera(45, width / height);
+            camera.position.set(20, 20, 20);
+            camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+            // 床
+            const meshFloor = new THREE.Mesh(
+                new THREE.BoxGeometry(2000, 0.1, 2000),
+                new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.0 })
+            );
+            scene.add(meshFloor);
+
+            // オブジェクト
+            const meshKnot = new THREE.Mesh(
+                new THREE.TorusKnotGeometry(3, 1, 100, 16),
+                new THREE.MeshStandardMaterial({ color: 0xaa0000, roughness: 0.0 })
+            );
+            meshKnot.position.set(0, 5, 0);
+            scene.add(meshKnot);
+
+            /*
+            AmbientLight 環境光源
+            3D空間全体に均等に光を当てる
+            陰影や影(cast shadow)ができないので、この光源だけだと立体感を表現することはできない
+            THREE.AmbientLight(色, 光の強さ)
+            */
+            // const light = new THREE.AmbientLight(0xffffff, 1.0);
+            // scene.add(light);
+
+            /*
+            DirectiontLight 平行光源
+            無限に離れているところから特定の方向に放射される光
+            太陽🌞
+            THREE.DirectionalLight(色, 光の強さ)
+            */
+            // const light = new THREE.DirectionalLight(0xFFFFFF, 1);
+            // scene.add(light);
+
+            // // 照明を可視化するヘルパー
+            // const lightHelper = new THREE.DirectionalLightHelper(light);
+            // scene.add(lightHelper);
+
+            /*
+            HemisphereLight 半球光源
+            上からの光の色と下からの光の色を分けられる
+            下からの光は反射光として、屋外での光の見え方に近くなる
+            THREE.HemisphereLight(空の色, 地の色, 光の強さ)
+            */
+            // const light = new THREE.HemisphereLight(0x888888, 0x0000FF, 1.0);
+            // scene.add(light);
+
+            // // 照明を可視化するヘルパー
+            // const lightHelper = new THREE.HemisphereLightHelper(light);
+            // scene.add(lightHelper);
+
+            /*
+            PointLight 点光源
+            単一点からあらゆる方向から放射される光源
+            裸電球💡
+            THREE.PointLight(色, 光の強さ, 距離, 光の減衰率)
+            */
+            // const light = new THREE.PointLight(0xFFFFFF, 2, 50, 1.0);
+            // scene.add(light);
+
+            // // 照明を可視化するヘルパー
+            // const lightHelper = new THREE.PointLightHelper(light);
+            // scene.add(lightHelper);
+
+            /*
+            SpotLight スポットライト光源
+            単一の点から一方向に放出され、円錐に沿って放出される光源
+            懐中電灯🔦、スポットライト🕺
+            THREE.SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
+            */
+            // const light = new THREE.SpotLight(0xFFFFFF, 4, 30, Math.PI / 4, 0, 0.5);
+            // scene.add(light);
+
+            // // 照明を可視化するヘルパー
+            // const lightHelper = new THREE.SpotLightHelper(light);
+            // scene.add(lightHelper);
+
+            /*
+            RectAreaLight 矩形光源
+            面を横切って矩形平面に均一に放出される光源
+            明るい窓やストリップ照明のようなものをシミュレートするために使用できる
+            THREE.RectAreaLight(色, 光の強さ, 幅, 高さ)
+            */
+            const light = new THREE.RectAreaLight(0xFFFFFF, 5.0, 10, 10);
+            scene.add(light);
+
+            // アニメーション
+            tick();
+            function tick() {
+                renderer.render(scene, camera);
+
+                // 照明の位置を更新
+                const t = Date.now() / 500;
+                const r = 20.0;
+                const lx = r * Math.cos(t);
+                const lz = r * Math.sin(t);
+                const ly = 6.0 + 5.0 * Math.sin(t / 3.0);
+                light.position.set(lx, ly, lz);
+
+                requestAnimationFrame(tick);
+            }
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>

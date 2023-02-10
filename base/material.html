@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <title>Document</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', init);
+        function init() {
+            const width  = 960;
+            const height = 540;
+
+            // レンダラー
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#myCanvas'),
+                antialias: true,
+            });
+            renderer.setPixelRatio(window.devicePixelRatio); //デバイスの解像度を指定
+            renderer.setSize(width, height);
+
+            // シーン
+            const scene = new THREE.Scene();
+
+            // カメラ
+            const camera = new THREE.PerspectiveCamera(45, width / height);
+            camera.position.set(0, 0, +1000); //カメラの位置を指定
+
+            /*
+            THREE.MeshBasicMaterial
+            ライティングを考慮しないマテリアル
+            */
+            // // ドーナツ
+            // const geometry = new THREE.TorusGeometry(300, 100, 64, 100);
+            // // マテリアル
+            // const material = new THREE.MeshBasicMaterial({color: 0xFF5A33});
+            // // メッシュ
+            // const mesh = new THREE.Mesh(geometry, material);
+            // scene.add(mesh);
+
+            /*
+            THREE.MeshNormalMaterial
+            ノーマルのカラーをRGBで可視化するマテリアル
+            */
+            // // ドーナツ
+            // const geometry = new THREE.TorusGeometry(300, 100, 64, 100);
+            // // マテリアル
+            // const material = new THREE.MeshNormalMaterial({color: 0xFACFCE}); //色は何でも同じ
+            // // メッシュ
+            // const mesh = new THREE.Mesh(geometry, material);
+            // scene.add(mesh);
+
+            /*
+            THREE.MeshLambertMaterial
+            光沢感のないマットな質感を表現できるマテリアル
+            陰影を必要とするマテリアルなのでライトが必要
+            */
+            // //ドーナツ
+            // const geometry = new THREE.TorusGeometry(300, 100, 64, 100);
+            // // マテリアル
+            // const material = new THREE.MeshLambertMaterial({color: 0xFACFCE});
+            // // メッシュ
+            // const mesh =  new THREE.Mesh(geometry, material);
+            // scene.add(mesh);
+
+            // // 平行光源
+            // const directionalLight = new THREE.DirectionalLight(0xffffff);
+            // directionalLight.position.set(1, 1, 1);
+            // scene.add(directionalLight);
+
+            // // ポイント光源
+            // const pointLight = new THREE.PointLight(0xffffff, 2, 1000);
+            // scene.add(pointLight);
+            // const pointLightHelper = new THREE.PointLightHelper(pointLight, 30);
+            // scene.add(pointLightHelper);
+
+            /*
+            THREE.MeshPhongMaterial
+            ＝フォンシェーディング
+            光沢感のある質感を表現できるマテリアル
+            ライトが必要
+            */
+            // //ドーナツ
+            // const geometry = new THREE.TorusGeometry(300, 100, 64, 100);
+            // // マテリアル
+            // const material = new THREE.MeshPhongMaterial({color: 0x6699FF});
+            // // メッシュ
+            // const mesh = new THREE.Mesh(geometry, material);
+            // scene.add(mesh);
+
+            // // 平行光源
+            // const directionalLight = new THREE.DirectionalLight(0xffffff);
+            // directionalLight.position.set(1, 1, 1);
+            // scene.add(directionalLight);
+
+            // // ポイント光源
+            // const pointLight = new THREE.PointLight(0xffffff, 2, 1000);
+            // scene.add(pointLight);
+            // const pointLightHelper = new THREE.PointLightHelper(pointLight, 30);
+            // scene.add(pointLightHelper);
+
+            /*
+            THREE.MeshToonMaterial
+            アニメのようなトゥーンシェーディングを実現できるマテリアル
+            MeshPhongMaterialクラスの拡張として用意されている
+            ライトが必要
+            */
+            // //ドーナツ
+            // const geometry = new THREE.TorusGeometry(300, 100, 64, 100);
+            // // マテリアル
+            // const material = new THREE.MeshToonMaterial({color: 0x6699FF});
+            // // メッシュ
+            // const mesh = new THREE.Mesh(geometry, material);
+            // scene.add(mesh);
+
+            // // 平行光源
+            // const directionalLight = new THREE.DirectionalLight(0xffffff);
+            // directionalLight.position.set(1, 1, 1);
+            // scene.add(directionalLight);
+
+            // // ポイント光源
+            // const pointLight = new THREE.PointLight(0xffffff, 2, 1000);
+            // scene.add(pointLight);
+            // const pointLightHelper = new THREE.PointLightHelper(pointLight, 30);
+            // scene.add(pointLightHelper);
+
+            /*
+            THREE.MeshStandardMaterial
+            物理ベースレンダリングのマテリアル
+            光の反射や散乱など現実の物理現象を再現
+            ライトが必要
+            */
+            //ドーナツ
+            const geometry = new THREE.TorusGeometry(300, 100, 64, 100);
+            // マテリアル
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x6699ff,
+                roughness: 0.5,
+            });
+            // メッシュ
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            // 平行光源
+            const directionalLight = new THREE.DirectionalLight(0xffffff);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+
+            // ポイント光源
+            const pointLight = new THREE.PointLight(0xffffff, 2, 1000);
+            scene.add(pointLight);
+            const pointLightHelper = new THREE.PointLightHelper(pointLight, 30);
+            scene.add(pointLightHelper);
+
+            tick();
+            function tick() {
+                mesh.rotation.x += 0.01;
+                mesh.rotation.y += 0.01;
+
+                // レンダリング
+                renderer.render(scene, camera);
+
+                requestAnimationFrame(tick);
+            }
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>
