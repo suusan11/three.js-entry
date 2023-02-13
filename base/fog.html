@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <title>Document</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            const width = 960;
+            const height = 540;
+
+            // レンダラー
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#myCanvas'),
+                antialias: true,
+                devicePixelRatio: window.devicePixelRatio,
+            });
+            renderer.setSize(width, height);
+
+            // シーン
+            const scene = new THREE.Scene();
+
+            // フォグを設定
+            // フォグ効果 = 遠くのものが霞んで見えるような状態にする
+            // new THREE.Fog(色, 開始距離, 終点距離);
+            scene.fog = new THREE.Fog(0x000000, 50, 2000);
+
+            // カメラ
+            const camera = new THREE.PerspectiveCamera(45, width / height);
+            camera.position.set(0, 0, +1000);
+
+            // グループ
+            const group = new THREE.Group();
+            scene.add(group);
+            const geometry = new THREE.BoxBufferGeometry(50, 50, 50);
+            const material = new THREE.MeshStandardMaterial();
+
+            for(let i = 0; i < 1000; i++) {
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.x = (Math.random() - 0.5) * 2000;
+                mesh.position.y = (Math.random() - 0.5) * 2000;
+                mesh.position.z = (Math.random() - 0.5) * 2000;
+                mesh.rotation.x = Math.random() * 2 * Math.PI;
+                mesh.rotation.y = Math.random() * 2 * Math.PI;
+                mesh.rotation.z = Math.random() * 2 * Math.PI;
+                // グループに格納する
+                group.add(mesh);
+            }
+
+            // ライト
+            scene.add(new THREE.DirectionalLight(0xff0000, 2)); // 平行光源
+            scene.add(new THREE.AmbientLight(0x00ffff)); //環境光源
+
+            tick();
+
+            function tick() {
+                // グループを回す
+                group.rotateY(0.01);
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(tick);
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>
