@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <title>Document</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            const width = 960;
+            const height = 540;
+
+            // レンダラー
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#myCanvas'),
+                devicePixelRatio: window.devicePixelRatio
+            });
+            renderer.setSize(width, height);
+
+            // シーン
+            const scene = new THREE.Scene();
+
+            // カメラ
+            const camera = new THREE.PerspectiveCamera(45, width / height);
+            camera.position.set(-100, 150, 500);
+            camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+            // 地面
+            scene.add(new THREE.GridHelper(600));
+            scene.add(new THREE.AxesHelper(300));
+
+            // グループ
+            const group = new THREE.Group();
+            scene.add(group);
+
+            for(let i = 0; i < 10; i++) {
+                // 直方体S
+                const geometry = new THREE.SphereGeometry(30, 30, 30);
+                const material = new THREE.MeshNormalMaterial();
+                const mesh = new THREE.Mesh(geometry, material);
+
+                // 配置座標を計算
+                const radian = (i / 10) * Math.PI * 2;
+                mesh.position.set(
+                    200 * Math.sin(radian), // X座標
+                    30, // Y座標
+                    200 * Math.cos(radian) // Z座標
+                );
+
+                // グループに追加
+                group.add(mesh);
+            }
+
+            tick();
+
+            function tick() {
+                group.rotation.y += 0.01;
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(tick);
+            }
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>
