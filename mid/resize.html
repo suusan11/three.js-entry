@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <title>Document</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', init);
+        function init() {
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#myCanvas'),
+                antialias: true,
+            });
+
+            // シーン
+            const scene = new THREE.Scene();
+
+            // カメラ
+            const camera = new THREE.PerspectiveCamera(45, 1.0);
+            camera.position.set(0, 0, +1000);
+
+            // 球体
+            const geometry = new THREE.SphereGeometry(300, 30, 30);
+            const material = new THREE.MeshBasicMaterial({ wireframe: true });
+            const mesh = new THREE.Mesh(geometry, material)
+            scene.add(mesh);
+
+            tick();
+            function tick() {
+                renderer.render(scene, camera);
+                requestAnimationFrame(tick);
+            }
+
+            // リサイズの初期化
+            onResize();
+            // リサイズイベント発生時に実行
+            window.addEventListener('resize', onResize);
+            function onResize() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+
+                // レンダラーのサイズを調整
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.setSize(width, height);
+
+                // カメラのアスペクト比を正す
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+            }
+        }
+    </script>
+</head>
+<style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+<body>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <title>Document</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', init);
+        function init() {
+            const width = 960;
+            const height = 540;
+            let rot = 0;
+
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#myCanvas'),
+                devicePixelRatio: window.devicePixelRatio
+            });
+            renderer.setSize(width, height);
+
+            // シーン
+            const scene = new THREE.Scene();
+
+            // カメラ
+            const camera = new THREE.PerspectiveCamera(45, width / height);
+
+            // 星屑を作成 (カメラの動きをわかりやすくするため)
+            createStarField();
+
+            function createStarField() {
+                // 頂点情報を格納する配列
+                const vertices = [];
+
+                // 配置する範囲
+                const SIZE = 3000;
+                // 配置する個数
+                const LENGTH = 1000;
+
+                for(let i = 0; i < LENGTH; i++) {
+                    const x = SIZE * (Math.random() - 0.5);
+                    const y = SIZE * (Math.random() - 0.5);
+                    const z = SIZE * (Math.random() - 0.5);
+
+                    vertices.push(x, y, z);
+                }
+
+                // 形状データを作成
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+                // マテリアルを作成
+                const material = new THREE.PointsMaterial({
+                    // 一つ一つのサイズ
+                    size: 10,
+                    // 色
+                    color: 0xFFFFFF
+                });
+
+                // 物体を作成
+                const mesh = new THREE.Points(geometry, material);
+                scene.add(mesh);
+            }
+
+            tick();
+            function tick() {
+                rot += 1;
+
+                // ラジアンに変換する
+                const radian = (rot * Math.PI) / 180;
+                // 角度に応じてカメラの位置を設定
+                camera.position.x = 1000 * Math.sin(radian);
+                camera.position.z = 1000 * Math.cos(radian);
+                // 原点方向を見つめる
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(tick);
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.147.0/examples/js/utils/BufferGeometryUtils.js"></script>
+    <script src="https://unpkg.com/stats.js@0.17.0/build/stats.min.js"></script>
+    <title>Document</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', init);
+        function init() {
+            const width = 960;
+            const height = 540;
+
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#myCanvas'),
+                devicePixelRatio: window.devicePixelRatio
+            });
+            renderer.setSize(width, height);
+
+            // シーン
+            const scene = new THREE.Scene();
+
+            // カメラ
+            const camera = new THREE.PerspectiveCamera(45, width / height);
+            camera.position.set(0, 0, 400);
+
+            // 1辺あたりに配置するオブジェクトの個数
+            const CELL_NUM = 25;
+            // 結合用のジオメトリを格納する配列
+            const boxes = [];
+            for(let i = 0; i < CELL_NUM; i++) {
+                for(let j = 0; j < CELL_NUM; j++) {
+                    for(let k = 0; k < CELL_NUM; k++) {
+                        // 立方体個別の要素を作成
+                        const geometryBox = new THREE.BoxGeometry(5, 5, 5);
+
+                        // 座標調整
+                        const geometryTranslated = geometryBox.translate(
+                            10 * (i - CELL_NUM / 2),
+                            10 * (j - CELL_NUM / 2),
+                            10 * (k - CELL_NUM / 2)
+                        );
+
+                        // ジオメトリを保存
+                        boxes.push(geometryTranslated);
+                    }
+                }
+            }
+
+            // ジオメトリを生成
+            const geometry = THREE.BufferGeometryUtils.mergeBufferGeometries(boxes);
+            // マテリアル
+            const material = new THREE.MeshNormalMaterial();
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            // フレームレートの数値を画面に表示
+            const stats = new Stats();
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.top = '10px';
+            document.body.appendChild(stats.domElement);
+
+            tick();
+            function tick() {
+                mesh.rotation.x += Math.PI / 180;
+                mesh.rotation.y += Math.PI / 180;
+
+                renderer.render(scene, camera);
+
+                // レンダリング情報を画面に表示
+                document.getElementById('info').innerHTML = JSON.stringify(renderer.info.render, '', '    ');
+
+                // フレームレートを表示
+                stats.update();
+
+                requestAnimationFrame(tick);
+            }
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <pre id="info"></pre>
+</body>
+</html>
