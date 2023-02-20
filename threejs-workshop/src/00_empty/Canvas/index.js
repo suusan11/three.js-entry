@@ -11,9 +11,13 @@ import * as THREE from 'three';
 
 // このクラス内に three.js のコードを書いていきます
 export default class Canvas {
-  constructor() {
+  constructor(elementId) {
     // スクロール量
     this.scrollY = 0;
+
+    // elementIdのついたDOM要素を取得
+    this.elementId = document.getElementById(elementId);
+    const rect = this.elementId.getBoundingClientRect();
 
     // マウス座標を保存
     this.mouse = new THREE.Vector2(0, 0);
@@ -59,19 +63,34 @@ export default class Canvas {
 
     // 立方体のジオメトリを作成(幅, 高さ, 奥行き)
     // const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const geometry = new THREE.BoxGeometry(300, 300, 300);
+    // const geometry = new THREE.BoxGeometry(300, 300, 300);
+
+    // DOMRectサイズの直方体ジオメトリを作成(幅, 高さ, 奥行き)
+    const depth = 300;
+    const geometry = new THREE.BoxGeometry(rect.width, rect.height, depth);
+
 
     // マテリアルを作成
     const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
 
     // ジオメトリとマテリアルからメッシュを作成
     this.mesh = new THREE.Mesh(geometry, material);
+    // DOMRectのサイズをジオメトリに反映するとき、奥行きの半分前に出ているのを下げる
+    // this.mesh.position.z = -depth / 2;
+
+    // ウィンドウ中心からDOMRect中心へのベクトルを求めてオフセットする
+    const center = new THREE.Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    const diff = new THREE.Vector2(center.x - this.w / 2, center.y - this.h / 2);
+    // this.mesh.position.set(diff.x, -diff.y, -depth/2);
+    this.mesh.position.set(diff.x, -(diff.y + this.scrollY), -depth/2);
+    this.offsetY = this.mesh.position.y;
+
     // 回転させる
 
     // rotationの角度の単位は「radian」なのでMath.PIを使って計算する
     // PI = 180なので 180° / 4 = 45°になる
-    this.mesh.rotation.x = Math.PI / 4;
-    this.mesh.rotation.y = Math.PI / 4;
+    // this.mesh.rotation.x = Math.PI / 4;
+    // this.mesh.rotation.y = Math.PI / 4;
 
     // THREE.Math.DEG2RADを使えば度数法で指定することもできる
     // this.mesh.rotation.x = THREE.Math.DEG2RAD * 45;
@@ -96,12 +115,14 @@ export default class Canvas {
     // this.mesh.rotation.y += 0.01;
 
     // 時間ベースのアニメーション
-    const sec = performance.now() / 1000; // ミリ秒から秒に変換
-    this.mesh.rotation.x = sec * (Math.PI / 4); // 1秒で45°回転する
-    this.mesh.rotation.y = sec * (Math.PI / 4); // 1秒で45°回転する
+    // const sec = performance.now() / 1000; // ミリ秒から秒に変換
+    // this.mesh.rotation.x = sec * (Math.PI / 4); // 1秒で45°回転する
+    // this.mesh.rotation.y = sec * (Math.PI / 4); // 1秒で45°回転する
 
     // スクロールに追従させる
-    this.mesh.position.y = this.scrollY * 0.5;
+    // this.mesh.position.y = this.scrollY;
+    // DOM要素に合わせて追従させる
+    this.mesh.position.y = this.offsetY + this.scrollY;
 
     this.renderer.render(this.scene, this.camera);
   }
